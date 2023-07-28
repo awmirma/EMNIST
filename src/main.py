@@ -1,31 +1,6 @@
 import numpy as np
+from emnist import extract_training_samples, extract_test_samples
 from keras import layers, models
-
-# Preprocess the EMNIST data
-def preprocess_emnist_data(train_images, test_images):
-    # Normalize pixel values to the range [0, 1]
-    train_images = train_images.astype('float32') / 255.0
-    test_images = test_images.astype('float32') / 255.0
-
-    # Flatten the images (convert 28x28 images to 1D arrays)
-    train_images = train_images.reshape(train_images.shape[0], 28 * 28)
-    test_images = test_images.reshape(test_images.shape[0], 28 * 28)
-
-    return train_images, test_images
-
-if __name__ == '__main__':
-    # Load the EMNIST data
-    train_images, train_labels, test_images, test_labels = load_emnist_data()
-
-    # Preprocess the EMNIST data
-    train_images, test_images = preprocess_emnist_data(train_images, test_images)
-
-    # # Print the shapes of the preprocessed data to verify
-    # print("Train images shape:", train_images.shape)
-    # print("Train labels shape:", train_labels.shape)
-    # print("Test images shape:", test_images.shape)
-    # print("Test labels shape:", test_labels.shape)
-
 
 def create_emnist_cnn():
     model = models.Sequential([
@@ -40,20 +15,31 @@ def create_emnist_cnn():
     ])
     return model
 
-model = create_emnist_cnn()
-# model.summary()
+def preprocess_emnist_data(train_images, test_images):
+    train_images = train_images.astype('float32') / 255.0
+    test_images = test_images.astype('float32') / 255.0
 
+    train_images = train_images.reshape(train_images.shape[0], 28 * 28)
+    test_images = test_images.reshape(test_images.shape[0], 28 * 28)
 
-# Compile model
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+    return train_images, test_images
 
-# Train model
-history = model.fit(train_images, train_labels, epochs=3, batch_size=128, validation_split=0.1)
+def train_emnist_model(train_images, train_labels, test_images, test_labels):
+    model = create_emnist_cnn()
+    model.compile(optimizer='adam',
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
 
-# Optional
-# Prediction
-# predictions = model.predict(test_images[:10])
-# Save the model
-# model.save('emnist_cnn_model.h5')
+    history = model.fit(train_images, train_labels, epochs=100, batch_size=128, validation_split=0.1)
+
+    test_loss, test_accuracy = model.evaluate(test_images, test_labels)
+    print("Test accuracy:", test_accuracy)
+
+    return model, history
+
+if __name__ == '__main__':
+    train_images, train_labels = extract_training_samples('byclass')
+    test_images, test_labels = extract_test_samples('byclass')
+    train_images, test_images = preprocess_emnist_data(train_images, test_images)
+
+    trained_model, training_history = train_emnist_model(train_images, train_labels, test_images, test_labels)

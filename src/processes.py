@@ -1,5 +1,3 @@
-# processes.py
-
 from emnist import extract_training_samples, extract_test_samples
 
 def load_emnist_data():
