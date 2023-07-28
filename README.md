@@ -26,8 +26,8 @@ The project is organized into the following files:
 1. Clone this repository to your local machine:
 
 ```
-git clone https://github.com/awmirma/EMNIST.git
-cd EMNIST
+git clone https://github.com/awmirma/EMNIST-Image-Classification.git
+cd EMNIST-Image-Classification
 ```
 
 2. Install the required packages:
