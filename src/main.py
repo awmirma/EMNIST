@@ -1,16 +1,5 @@
 import numpy as np
-from emnist import extract_training_samples, extract_test_samples
 from keras import layers, models
-
-# Download and load the EMNIST dataset
-def load_emnist_data():
-    # Extract training samples (images and labels)
-    train_images, train_labels = extract_training_samples('byclass')
-    
-    # Extract test samples (images and labels)
-    test_images, test_labels = extract_test_samples('byclass')
-
-    return train_images, train_labels, test_images, test_labels
 
 # Preprocess the EMNIST data
 def preprocess_emnist_data(train_images, test_images):
