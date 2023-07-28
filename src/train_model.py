@@ -1,6 +1,7 @@
 import numpy as np
 from emnist import extract_training_samples, extract_test_samples
 from keras import layers, models
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 
 def create_emnist_cnn():
     model = models.Sequential([
@@ -32,8 +33,16 @@ def train_emnist_model(train_images, train_labels, test_images, test_labels):
 
     history = model.fit(train_images, train_labels, epochs=100, batch_size=128, validation_split=0.1)
 
+    # Define early stopping and model checkpoint callbacks
+    early_stopping = EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)
+    model_checkpoint = ModelCheckpoint('best_emnist_cnn_model.h5', monitor='val_accuracy', save_best_only=True)
+
+    history = model.fit(train_images, train_labels, epochs=100, batch_size=128, validation_split=0.1,
+                        callbacks=[early_stopping, model_checkpoint])
+
     test_loss, test_accuracy = model.evaluate(test_images, test_labels)
     print("Test accuracy:", test_accuracy)
+    print("Test loss:", test_loss)
 
     return model, history
 
